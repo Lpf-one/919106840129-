@@ -7,21 +7,20 @@
 #include<math.h>
 #include<QMessageBox>
 
-chessByPerson::chessByPerson(QWidget *parent):QMainWindow(parent)
+chessByPerson::chessByPerson(QWidget *parent) : QMainWindow(parent)
 {
     this->setWindowTitle("hello");
-    setFixedSize(space*2+cell_size*chessboard_size,
-                 space*2+cell_size*chessboard_size);
-    goback.setParent(this);
-    goback.setText("rad");
-    goback.move(300,size().height()-cell_size);
-    initGame();
-    goback.move(300,size().height()-cell_size);
-    huiqizi.setParent(this);
-    huiqizi.setText("悔棋!");
-    huiqizi.move(600,size().height()-cell_size);
-
-};
+        setFixedSize(space*2+cell_size*chessboard_size,
+                     space*2+cell_size*chessboard_size);
+        goback.setParent(this);
+        goback.setText("rad");
+        goback.move(300,size().height()-cell_size);
+        initGame();
+        goback.move(300,size().height()-cell_size);
+        huiqizi.setParent(this);
+        huiqizi.setText("悔棋!");
+        huiqizi.move(600,size().height()-cell_size);
+}
 
 void chessByPerson::paintEvent(QPaintEvent *event){
     QPainter painter(this);
@@ -175,4 +174,3 @@ void chessByPerson::updatemap(int row,int col){
 void chessByPerson::sendslot(){
     emit mysignal();
 }
-

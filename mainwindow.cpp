@@ -14,18 +14,19 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     //创建按钮
-    QPushButton *btn1=new QPushButton("人人对战",this);
-    QPushButton *btn2=new QPushButton("人机对战",this);
-    QPushButton *btn3=new QPushButton("机机对战",this);
-    btn1->move(300,100);
-    btn2->move(300,200);
-    btn3->move(300,300);
+    btn1=new QPushButton(this);
+    btn1->setText(" 人人对战");
+    btn1->move(100,50);
+    btn2=new QPushButton(this);
+    btn2->setText("人机对战");
+    btn2->move(100,100);
+    btn3=new QPushButton(this);
+    btn3->setText("机机对战");
+    btn3->move(100,150);
     //重置窗口大小
     resize(600,500);
-    chessByPerson *p;
-    p=new chessByPerson;
-
-
+    //连接信号和槽
+    connect(btn1,&QPushButton::pressed,this,&MainWindow::close);
 
 
 
