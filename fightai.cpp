@@ -1,4 +1,4 @@
-#include "chessbyperson.h"
+#include "fightai.h"
 #include"gamemodel.h"
 #include<widget.h>
 //画图所需头文件
@@ -7,20 +7,18 @@
 #include<math.h>
 #include<QMessageBox>
 
-chessByPerson::chessByPerson(QWidget *parent) : QWidget(parent)
+fightAI::fightAI(QWidget *parent) : QWidget(parent)
 {
     setMouseTracking(true);
-    this->setWindowTitle("欢迎您来到人人对战模式");
-    b1.setParent(this);
-    b1.setText("返回到主界面");
-    connect(&b1,&QPushButton::clicked,this,&chessByPerson::sendsalotone);
+    this->setWindowTitle("欢迎您来到人机对战模式");
+    b2.setParent(this);
+    b2.setText("返回到主界面");
+    connect(&b2,&QPushButton::clicked,this,&fightAI::sendsalottwo);
     setFixedSize(space*2+cell_size*chessboard_size,
                  space*2+cell_size*chessboard_size);
     initGame();
-
 }
-
-void chessByPerson::paintEvent(QPaintEvent *event){
+void fightAI::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     //绘制棋盘
     painter.setRenderHint(QPainter::Antialiasing,true);  //抗锯齿
@@ -95,15 +93,14 @@ void chessByPerson::paintEvent(QPaintEvent *event){
     }
 }
 
-void chessByPerson::initGame()
-{
+void fightAI::initGame(){
     game=new GameModel;
-    game_type=gamemodeone;
+    game_type=gamemodetwo;
     game->gameStatus=PLAYING;
     game->startGame(game_type);
 }
 
-void chessByPerson::mouseMoveEvent(QMouseEvent *event){
+void fightAI::mouseMoveEvent(QMouseEvent *event){
     int x=event->x();
     int y=event->y();
     //棋盘的边缘不能落子
@@ -154,14 +151,16 @@ void chessByPerson::mouseMoveEvent(QMouseEvent *event){
     update();
 }
 
-void chessByPerson::mouseReleaseEvent(QMouseEvent *event){
+void fightAI::mouseReleaseEvent(QMouseEvent *event){
     if(selectPos==false){return;}
     //落子前将落子标记设为false
     else {selectPos=false;}
-    chessonebyperson();
+    chessoneByPerson();
+    if(game_type==gamemodetwo){
+        AIplaywu();
+    }
 }
-
-void chessByPerson::chessonebyperson(){
+void fightAI::chessoneByPerson(){
     //根据当前存储的坐标下子，且此处没有子有效点击才下子
     if(clickPosRow!=-1&&clickPosCol!=-1&&game->map[clickPosRow][clickPosCol]=='*'){
         //在游戏的数据模型中落子
@@ -171,7 +170,10 @@ void chessByPerson::chessonebyperson(){
         update();
     }
 }
+void fightAI::AIplaywu(){
+    game->AIplaywu();
+}
 
-void chessByPerson::sendsalotone(){
+void fightAI::sendsalottwo(){
     emit mysignal();
 }

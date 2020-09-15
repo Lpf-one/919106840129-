@@ -1,17 +1,16 @@
-#ifndef CHESSBYPERSON_H
-#define CHESSBYPERSON_H
+#ifndef AIFIGHT_H
+#define AIFIGHT_H
 
 #include <QWidget>
 #include <QPushButton>
 #include <gamemodel.h>
 
-class chessByPerson : public QWidget
+class AIfight : public QWidget
 {
     Q_OBJECT
 public:
-    explicit chessByPerson(QWidget *parent = nullptr);
-    void sendsalotone();
-
+    explicit AIfight(QWidget *parent = nullptr);
+    void sendsalotthree();
     GameModel *game;          //游戏指针
     GameType game_type;       //游戏存储类型
 
@@ -20,16 +19,15 @@ public:
      void initGame();
      void mouseMoveEvent(QMouseEvent *event);
      void mouseReleaseEvent(QMouseEvent *event);
-     void jinshou();
-     void chessonebyperson();
+     void chessoneByPerson();
+     void AIplayyou();
 
 signals:
     void mysignal();
-
 public slots:
-        void paintEvent(QPaintEvent *event);     //绘制
+     void paintEvent(QPaintEvent *event);     //绘制
 private:
-    QPushButton b1;
+    QPushButton b3;
 };
 
-#endif // CHESSBYPERSON_H
+#endif // AIFIGHT_H

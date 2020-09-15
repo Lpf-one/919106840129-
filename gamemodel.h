@@ -1,21 +1,19 @@
 #ifndef GAMEMODEL_H
 #define GAMEMODEL_H
 
-
 //----六子棋游戏模型类----//
 #include <vector>
 
 //游戏类型，人人，人机，机机
 enum GameType{
-    gamemodeone,  //人人
-    gamemodetwo,  //人机
-    gamemodethree  //机机
+    gamemodeone,  // player1 battle player2
+    gamemodetwo,  // player battle AI
+    gamemodethree  //AI battle player
 };
 //游戏状态
 enum GameStatus{
     PLAYING,
     WIN,
-    DEAD,
     HEQI
 };
 
@@ -38,12 +36,8 @@ public:
     GameStatus gameStatus;    //游戏状态
 
     bool winorlose(int x,int y);      //判断输赢
-    bool legal(int x,int y);          //判断合法性
-    bool huiqi(int x,int y);          //判断是否悔棋，输入-1和20时悔棋
     bool heqi();                      //判断是否和棋
     bool jinshou(int x,int y);        //判断是否禁手
-    void initializemap();             //地图初始化
-    void gamestart();                 //进入游戏的界面
     void playchess(int x, int y);     //玩家落子，B为黑棋，W为白棋
     void AIgetscore(char ch);         //AI得分图
     void AIplayyou();                 //AI下棋（有禁手规则）
@@ -51,9 +45,8 @@ public:
     void AI1play();                   //AI1下棋（有禁手规则）
     void AI2play();                   //AI2下棋（无禁手规则）
 
-
+    void actionByPerson(int row, int col);
     void startGame(GameType type);
-    void actionByPerson(int row,int col);
     void updatemap(int row,int col);
 
 

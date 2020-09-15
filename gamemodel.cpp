@@ -4,69 +4,64 @@
 #include <cstring>
 #include <cstdio>
 #include <ctime>
-#include <Windows.h>
+#include <widget.h>
 using namespace std;
 int a, b, a1, b1, a2, b2;
 char ch;
 
 bool GameModel::winorlose(int x, int y){
-    char t;
-    if(playerflag) t='B';
-    else t='W';
-    int count;
-    count = 1;                         //竖直方向
-    for (int i = x, j = y + 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && j <= y + 5; j++) {
-        if (map[i][j] == t) count++;
-        else break;
+    for (int i = 0; i < 6; i++){      //从水平方向判断输赢
+        if (y - i > 0 &&
+            y - i + 5 < chessboard_size &&
+            map[x][y - i] == map[x][y - i + 1] &&
+            map[x][y - i] == map[x][y - i + 2] &&
+            map[x][y - i] == map[x][y - i + 3] &&
+            map[x][y - i] == map[x][y - i + 4] &&
+            map[x][y - i] == map[x][y - i + 5])
+            return true;
     }
-    for (int i = x, j = y - 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && j >= y - 5; j--) {
-        if (map[i][j] == t) count++;
-        else break;
+    for (int i = 0; i < 6; i++){      //从竖直方向判断输赢
+        if (x - i > 0 &&
+            x - i + 5 < chessboard_size &&
+            map[x - i][y] == map[x - i + 1][y] &&
+            map[x - i][y] == map[x - i + 2][y] &&
+            map[x - i][y] == map[x - i + 3][y] &&
+            map[x - i][y] == map[x - i + 4][y] &&
+            map[x - i][y] == map[x - i + 5][y])
+            return true;
     }
-    if (count >= 6) return true;
-    count = 1;                    //水平方向
-    for (int i = x + 1, j = y; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i <= x + 5; i++) {
-        if (map[i][j] == t) count++;
-        else break;
+    for (int i = 0; i < 6; i++){    //从左下到右上方向上判断输赢
+        if (x + i < chessboard_size &&
+            x + i - 5 > 0 &&
+            y - i > 0 &&
+            y - i + 5 < chessboard_size &&
+            map[x + i][y - i] == map[x + i - 1][y - i + 1] &&
+            map[x + i][y - i] == map[x + i - 2][y - i + 2] &&
+            map[x + i][y - i] == map[x + i - 3][y - i + 3] &&
+            map[x + i][y - i] == map[x + i - 4][y - i + 4] &&
+            map[x + i][y - i] == map[x + i - 5][y - i + 5])
+            return true;
     }
-    for (int i = x - 1, j = y; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i >= x - 5; i--) {
-        if (map[i][j] == t) count++;
-        else break;
+
+    for (int i = 0; i < 6; i++){    //从左上到右下方向上判断输赢
+        if (x - i > 0 &&
+            x - i + 5 < chessboard_size &&
+            y - i > 0 &&
+            y - i + 5 < chessboard_size &&
+            map[x - i][y - i] == map[x - i + 1][y - i + 1] &&
+            map[x - i][y - i] == map[x - i + 2][y - i + 2] &&
+            map[x - i][y - i] == map[x - i + 3][y - i + 3] &&
+            map[x - i][y - i] == map[x - i + 4][y - i + 4] &&
+            map[x - i][y - i] == map[x - i + 5][y - i + 5])
+            return true;
     }
-    if (count >= 6) return true;
-    count = 1;          //从左下斜向右上
-    for (int i = x + 1, j = y + 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i <= x + 5 && j <= y + 5; i++, j++) {
-        if (map[i][j] == t) count++;
-        else break;
-    }
-    for (int i = x - 1, j = y - 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i >= x - 5 && j >= y - 5; i--, j--) {
-        if (map[i][j] == t) count++;
-        else break;
-    }
-    if (count >= 6) return true;
-    count = 1;    //左上斜向右下
-    for (int i = x - 1, j = y + 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i >= x - 5 && j <= y + 5; i--, j++) {
-        if (map[i][j] == t) count++;
-        else break;
-    }
-    for (int i = x + 1, j = y - 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i <= x + 5 && j >= y - 5; i++, j--) {
-        if (map[i][j] == t) count++;
-        else break;
-    }
-    if (count >= 6) return true;
     return false;
 }
-
-bool GameModel::legal(int x, int y){
-    if (x >=chessboard_size || x < 0 || y>=chessboard_size || y < 0 || map[x][y] != '*')
-        return false;
-    else return true;
-}
-
-bool GameModel::huiqi(int x, int y){
-    if (x == -1 && y == 20)
-        return true;
-    else return false;
+void GameModel::updatemap(int row,int col){
+    if(playerflag) map[row][col]='B';
+    else map[row][col]='W';
+    //换手
+    playerflag=!playerflag;
 }
 
 bool GameModel::heqi(){
@@ -79,106 +74,88 @@ bool GameModel::heqi(){
 }
 
 bool GameModel::jinshou(int x, int y){
-    char t,s;
-    if(playerflag) {t='B';s='W';}
-    else {t='W';s='B';}
-    int num4 = 0, num5 = 0, i, j;
+        int num4 = 0, num5 = 0, i, j;
         int count;
         char temp1, temp2;
         count = 1;          //竖直方向判断禁手
         for (i = x, j = y + 1; i >= 0 && j >= 0 && i <chessboard_size && j < chessboard_size && j <= y + 4; j++) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp1 = map[i][j];
         for (i = x, j = y - 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && j >= y - 4; j--) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp2 = map[i][j];
         if (count == 4) {
             num4++;
-            if (temp1 == s && temp2 == s) num4--;
+            if (temp1 == 'W' && temp2 == 'W') num4--;
         }
         if (count == 5) {
             num5++;
-            if (temp1 == s && temp2 == s) num5--;
+            if (temp1 == 'W' && temp2 == 'W') num5--;
         }
         count = 1;          //水平方向判断禁手
         for (i = x + 1, j = y; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i <= x + 4; i++) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp1 = map[i][j];
         for (i = x - 1, j = y; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i >= x - 4; i--) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp2 = map[i][j];
         if (count == 4) {
             num4++;
-            if (temp1 == s && temp2 == s) num4--;
+            if (temp1 == 'W' && temp2 == 'W') num4--;
         }
         if (count == 5) {
             num5++;
-            if (temp1 == s && temp2 == s) num5--;
+            if (temp1 == 'W' && temp2 == 'W') num5--;
         }
         count = 1;    //从左下斜向右上
         for (i = x + 1, j = y + 1; i >= 0 && j >= 0 && i < chessboard_size&& j < chessboard_size && i <= x + 4 && j <= y + 4; i++, j++) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp1 = map[i][j];
         for (i = x - 1, j = y - 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size&& i >= x - 4 && j >= y - 4; i--, j--) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp2 = map[i][j];
         if (count == 4) {
             num4++;
-            if (temp1 == s && temp2 == s) num4--;
+            if (temp1 == 'W' && temp2 == 'W') num4--;
         }
         if (count == 5) {
             num5++;
-            if (temp1 == s && temp2 == s) num5--;
+            if (temp1 == 'W' && temp2 == 'W') num5--;
         }
         count = 1;    //左上斜向右下
         for (i = x - 1, j = y + 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i >= x - 4 && j <= y + 4; i--, j++) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp1 = map[i][j];
         for (i = x + 1, j = y - 1; i >= 0 && j >= 0 && i < chessboard_size && j < chessboard_size && i <= x + 4 && j >= y - 4; i++, j--) {
-            if (map[i][j] == t) count++;
+            if (map[i][j] == 'B') count++;
             else break;
         }
         temp2 = map[i][j];
         if (count == 4) {
             num4++;
-            if (temp1 == s && temp2 == s) num4--;
+            if (temp1 == 'W' && temp2 == 'W') num4--;
         }
         if (count == 5) {
             num5++;
-            if (temp1 == s && temp2 == s) num5--;
+            if (temp1 == 'W' && temp2 == 'W') num5--;
         }
         if (num4 >= 2) return true;
         else if (num5 >= 2) return true;
         else return false;
-}
-
-void GameModel::initializemap(){
-    for (int i = 0; i < chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
-            map[i][j] = '*';
-}
-
-void GameModel::gamestart(){
-    cout << "开始游玩" << endl;
-    cout << "请选择游戏模式" << endl;
-    cout << "1.人人对战" << endl;
-    cout << "2.人机对战" << endl;
-    cout << "3.机机对战" << endl;
-    cout << "4.Quit" << endl;
 }
 
 void GameModel::playchess(int x, int y){
@@ -288,40 +265,9 @@ void GameModel::AIgetscore(char ch){
         }
 }
 
-void GameModel::AIplayyou(){
-    AIgetscore(ch);
-    char dh;
-    if (ch == 'B') dh = 'W';
-    else dh = 'B';
-    int maxscore = 0;
-    for (int i = 0; i <chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
-            if (scoremap[i][j] > maxscore) maxscore = scoremap[i][j];     //得到最大分数值
-    int num = 0;             //最大值个数
-    int p[400], q[400];            //存放可放最大值位置的数组
-    for (int i = 0; i < chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
-            if (scoremap[i][j] == maxscore) {
-                if (!jinshou(i, j)) {
-                    p[num] = i;
-                    q[num] = j;
-                    num++;
-                }
-            }
-    int n;
-    srand((unsigned)time(0));
-    n = rand() % num;	                 //n为0到num-1的随机数，随机取一个最大数值
-    if (ch == 'B') map[p[n]][q[n]] = 'W';
-    else map[p[n]][q[n]] = 'B';
-    a2 = p[n];
-    b2 = q[n];
-    a = p[n];
-    b = q[n];
-    Sleep(2000);
-}
 
 void GameModel::AIplaywu(){
-    AIgetscore(ch);
+    AIgetscore('W');
     int maxscore = 0;
     for (int i = 0; i < chessboard_size; i++)
         for (int j = 0; j < chessboard_size; j++)
@@ -337,14 +283,8 @@ void GameModel::AIplaywu(){
             }
     int n;
     srand((unsigned)time(0));
-    n = rand() % num;	                 //n为0到num-1的随机数，随机取一个最大数值
-    if (ch == 'B') map[p[n]][q[n]] = 'W';
-    else map[p[n]][q[n]] = 'B';
-    a2 = p[n];
-    b2 = q[n];
-    a = p[n];
-    b = q[n];
-    Sleep(2000);
+    n = rand() % num;	//n为0到num-1的随机数，随机取一个最大数值
+    updatemap(p[n],q[n]);
 }
 
 void GameModel::AI1play(){
@@ -374,7 +314,6 @@ void GameModel::AI1play(){
     else map[p[n]][q[n]] = 'B';
     a = p[n];
     b = q[n];
-    Sleep(2000);
 }
 
 void GameModel::AI2play(){
@@ -399,7 +338,6 @@ void GameModel::AI2play(){
     else map[p[n]][q[n]] = 'B';
     a = p[n];
     b = q[n];
-    Sleep(2000);
 }
 
 
@@ -427,16 +365,7 @@ void GameModel::startGame(GameType type){
     playerflag=true;
 }
 
-
 void GameModel::actionByPerson(int row, int col){
     updatemap(row,col);
-
 }
 
-
-void GameModel::updatemap(int row,int col){
-    if(playerflag) map[row][col]='B';
-    else map[row][col]='W';
-    //换手
-    playerflag=!playerflag;
-}

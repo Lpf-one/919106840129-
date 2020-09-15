@@ -1,4 +1,4 @@
-#include "chessbyperson.h"
+#include "aifight.h"
 #include"gamemodel.h"
 #include<widget.h>
 //画图所需头文件
@@ -6,21 +6,18 @@
 #include"QMouseEvent"
 #include<math.h>
 #include<QMessageBox>
-
-chessByPerson::chessByPerson(QWidget *parent) : QWidget(parent)
+AIfight::AIfight(QWidget *parent) : QWidget(parent)
 {
     setMouseTracking(true);
-    this->setWindowTitle("欢迎您来到人人对战模式");
-    b1.setParent(this);
-    b1.setText("返回到主界面");
-    connect(&b1,&QPushButton::clicked,this,&chessByPerson::sendsalotone);
+    this->setWindowTitle("欢迎您来到人机对战模式");
+    b3.setParent(this);
+    b3.setText("返回到主界面");
+    connect(&b3,&QPushButton::clicked,this,&AIfight::sendsalotthree);
     setFixedSize(space*2+cell_size*chessboard_size,
                  space*2+cell_size*chessboard_size);
     initGame();
-
 }
-
-void chessByPerson::paintEvent(QPaintEvent *event){
+void AIfight::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     //绘制棋盘
     painter.setRenderHint(QPainter::Antialiasing,true);  //抗锯齿
@@ -63,14 +60,6 @@ void chessByPerson::paintEvent(QPaintEvent *event){
             clickPosCol > 0 && clickPosCol < chessboard_size &&
             (game->map[clickPosRow][clickPosCol] == 'B'||
              game->map[clickPosRow][clickPosCol] == 'W')){
-        if(game->jinshou(clickPosRow,clickPosCol)&&game->gameStatus==PLAYING&&game->map[clickPosRow][clickPosCol]=='B'){
-            QMessageBox::StandardButton btend = QMessageBox::information(this, "恭喜",  "白棋win!");
-             //重置游戏状态，否则容易死循环
-            if(btend==QMessageBox::Ok){
-                game->startGame(game_type);
-                game->gameStatus=PLAYING;
-            }
-        } else
         if(game->winorlose(clickPosRow,clickPosCol)&&game->gameStatus==PLAYING){
                game->gameStatus=WIN;
                //sound
@@ -95,15 +84,15 @@ void chessByPerson::paintEvent(QPaintEvent *event){
     }
 }
 
-void chessByPerson::initGame()
-{
+void AIfight::initGame(){
     game=new GameModel;
-    game_type=gamemodeone;
+    game_type=gamemodethree;
     game->gameStatus=PLAYING;
     game->startGame(game_type);
 }
 
-void chessByPerson::mouseMoveEvent(QMouseEvent *event){
+
+void AIfight::mouseMoveEvent(QMouseEvent *event){
     int x=event->x();
     int y=event->y();
     //棋盘的边缘不能落子
@@ -154,14 +143,16 @@ void chessByPerson::mouseMoveEvent(QMouseEvent *event){
     update();
 }
 
-void chessByPerson::mouseReleaseEvent(QMouseEvent *event){
+void AIfight::mouseReleaseEvent(QMouseEvent *event){
     if(selectPos==false){return;}
     //落子前将落子标记设为false
     else {selectPos=false;}
-    chessonebyperson();
+    chessoneByPerson();
+    if(game_type==gamemodethree){
+        AIplayyou();
+    }
 }
-
-void chessByPerson::chessonebyperson(){
+void AIfight::chessoneByPerson(){
     //根据当前存储的坐标下子，且此处没有子有效点击才下子
     if(clickPosRow!=-1&&clickPosCol!=-1&&game->map[clickPosRow][clickPosCol]=='*'){
         //在游戏的数据模型中落子
@@ -171,7 +162,28 @@ void chessByPerson::chessonebyperson(){
         update();
     }
 }
-
-void chessByPerson::sendsalotone(){
+void AIfight::AIplayyou(){
+    game->AIgetscore('B');
+    int maxscore = 0;
+    for (int i = 0; i < 20; i++)
+        for (int j = 0; j < 20; j++)
+            if (game->scoremap[i][j] > maxscore) maxscore = game->scoremap[i][j];     //得到最大分数值
+    int num = 0;             //最大值个数
+    int p[400], q[400];            //存放可放最大值位置的数组
+    for (int i = 0; i < 20; i++)
+        for (int j = 0; j < 20; j++)
+            if (game->scoremap[i][j] == maxscore) {
+                if (!game->jinshou(i, j)) {
+                    p[num] = i;
+                    q[num] = j;
+                    num++;
+                }
+            }
+    int n;
+    srand((unsigned)time(0));
+    n = rand() % num;	                 //n为0到num-1的随机数，随机取一个最大数值
+    game->updatemap(p[n],q[n]);
+}
+void AIfight::sendsalotthree(){
     emit mysignal();
 }
