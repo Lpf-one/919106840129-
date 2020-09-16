@@ -6,19 +6,27 @@
 #include"QMouseEvent"
 #include<math.h>
 #include<QMessageBox>
+#include<QPixmap>
+
 AIfight::AIfight(QWidget *parent) : QWidget(parent)
 {
     setMouseTracking(true);
-    this->setWindowTitle("欢迎您来到人机对战模式");
+    this->setWindowTitle("欢迎您来到机机对战模式");
     b3.setParent(this);
     b3.setText("返回到主界面");
     connect(&b3,&QPushButton::clicked,this,&AIfight::sendsalotthree);
-    setFixedSize(space*2+cell_size*chessboard_size,
-                 space*2+cell_size*chessboard_size);
+    setFixedSize(space*2+cell_size*(chessboard_size-1),
+                 space*2+cell_size*(chessboard_size-1));
     initGame();
+
 }
+
 void AIfight::paintEvent(QPaintEvent *event){
     QPainter painter(this);
+    //设置背景
+    QPixmap p3;
+    p3.load("/QT/pfconnectsix/AIfight.jpg");
+    painter.drawPixmap(0,0,width(),height(),p3);
     //绘制棋盘
     painter.setRenderHint(QPainter::Antialiasing,true);  //抗锯齿
     for(int i=0;i<=chessboard_size;i++){
@@ -91,7 +99,6 @@ void AIfight::initGame(){
     game->startGame(game_type);
 }
 
-
 void AIfight::mouseMoveEvent(QMouseEvent *event){
     int x=event->x();
     int y=event->y();
@@ -147,42 +154,11 @@ void AIfight::mouseReleaseEvent(QMouseEvent *event){
     if(selectPos==false){return;}
     //落子前将落子标记设为false
     else {selectPos=false;}
-    chessoneByPerson();
-    if(game_type==gamemodethree){
-        AIplayyou();
-    }
+    chessByAI();
 }
-void AIfight::chessoneByPerson(){
-    //根据当前存储的坐标下子，且此处没有子有效点击才下子
-    if(clickPosRow!=-1&&clickPosCol!=-1&&game->map[clickPosRow][clickPosCol]=='*'){
-        //在游戏的数据模型中落子
-       game->actionByPerson(clickPosRow,clickPosCol);
-        //播放落子音效
-        //重绘
-        update();
-    }
-}
-void AIfight::AIplayyou(){
-    game->AIgetscore('B');
-    int maxscore = 0;
-    for (int i = 0; i < 20; i++)
-        for (int j = 0; j < 20; j++)
-            if (game->scoremap[i][j] > maxscore) maxscore = game->scoremap[i][j];     //得到最大分数值
-    int num = 0;             //最大值个数
-    int p[400], q[400];            //存放可放最大值位置的数组
-    for (int i = 0; i < 20; i++)
-        for (int j = 0; j < 20; j++)
-            if (game->scoremap[i][j] == maxscore) {
-                if (!game->jinshou(i, j)) {
-                    p[num] = i;
-                    q[num] = j;
-                    num++;
-                }
-            }
-    int n;
-    srand((unsigned)time(0));
-    n = rand() % num;	                 //n为0到num-1的随机数，随机取一个最大数值
-    game->updatemap(p[n],q[n]);
+void AIfight::chessByAI(){
+    game->AI1play();
+    game->AI2play();
 }
 void AIfight::sendsalotthree(){
     emit mysignal();

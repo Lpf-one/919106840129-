@@ -6,6 +6,7 @@
 #include"QMouseEvent"
 #include<math.h>
 #include<QMessageBox>
+#include<QPixmap>
 
 chessByPerson::chessByPerson(QWidget *parent) : QWidget(parent)
 {
@@ -14,17 +15,20 @@ chessByPerson::chessByPerson(QWidget *parent) : QWidget(parent)
     b1.setParent(this);
     b1.setText("返回到主界面");
     connect(&b1,&QPushButton::clicked,this,&chessByPerson::sendsalotone);
-    setFixedSize(space*2+cell_size*chessboard_size,
-                 space*2+cell_size*chessboard_size);
+    setFixedSize(space*2+cell_size*(chessboard_size-1),
+                 space*2+cell_size*(chessboard_size-1));
     initGame();
-
 }
 
 void chessByPerson::paintEvent(QPaintEvent *event){
     QPainter painter(this);
+    //设置背景
+    QPixmap p1;
+    p1.load("/QT/pfconnectsix/chessByPerson.jpg");
+    painter.drawPixmap(0,0,width(),height(),p1);
     //绘制棋盘
     painter.setRenderHint(QPainter::Antialiasing,true);  //抗锯齿
-    for(int i=0;i<=chessboard_size;i++){
+    for(int i=0;i<chessboard_size;i++){
         painter.drawLine(space+cell_size*i,space,
                          space+cell_size*i,size().height()-space);    //从左到右
         painter.drawLine(space,space+cell_size*i,
@@ -166,7 +170,7 @@ void chessByPerson::chessonebyperson(){
     if(clickPosRow!=-1&&clickPosCol!=-1&&game->map[clickPosRow][clickPosCol]=='*'){
         //在游戏的数据模型中落子
        game->actionByPerson(clickPosRow,clickPosCol);
-        //播放落子音效
+        //播放落子音效      
         //重绘
         update();
     }

@@ -6,6 +6,7 @@
 #include"QMouseEvent"
 #include<math.h>
 #include<QMessageBox>
+#include<QPixmap>
 
 fightAI::fightAI(QWidget *parent) : QWidget(parent)
 {
@@ -14,12 +15,16 @@ fightAI::fightAI(QWidget *parent) : QWidget(parent)
     b2.setParent(this);
     b2.setText("返回到主界面");
     connect(&b2,&QPushButton::clicked,this,&fightAI::sendsalottwo);
-    setFixedSize(space*2+cell_size*chessboard_size,
-                 space*2+cell_size*chessboard_size);
+    setFixedSize(space*2+cell_size*(chessboard_size-1),
+                 space*2+cell_size*(chessboard_size-1));
     initGame();
 }
 void fightAI::paintEvent(QPaintEvent *event){
     QPainter painter(this);
+    //设置背景
+    QPixmap p2;
+    p2.load("/QT/pfconnectsix/fightAI.jpg");
+    painter.drawPixmap(0,0,width(),height(),p2);
     //绘制棋盘
     painter.setRenderHint(QPainter::Antialiasing,true);  //抗锯齿
     for(int i=0;i<=chessboard_size;i++){

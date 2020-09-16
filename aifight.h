@@ -19,9 +19,7 @@ public:
      void initGame();
      void mouseMoveEvent(QMouseEvent *event);
      void mouseReleaseEvent(QMouseEvent *event);
-     void chessoneByPerson();
-     void AIplayyou();
-
+     void chessByAI();
 signals:
     void mysignal();
 public slots:

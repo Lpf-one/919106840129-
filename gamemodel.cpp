@@ -1,18 +1,10 @@
 #include "gamemodel.h"
 
-#include <iostream>
-#include <cstring>
-#include <cstdio>
-#include <ctime>
 #include <widget.h>
-using namespace std;
-int a, b, a1, b1, a2, b2;
-char ch;
-
 bool GameModel::winorlose(int x, int y){
     for (int i = 0; i < 6; i++){      //从水平方向判断输赢
         if (y - i > 0 &&
-            y - i + 5 < chessboard_size &&
+            y - i + 5 < 21 &&
             map[x][y - i] == map[x][y - i + 1] &&
             map[x][y - i] == map[x][y - i + 2] &&
             map[x][y - i] == map[x][y - i + 3] &&
@@ -22,7 +14,7 @@ bool GameModel::winorlose(int x, int y){
     }
     for (int i = 0; i < 6; i++){      //从竖直方向判断输赢
         if (x - i > 0 &&
-            x - i + 5 < chessboard_size &&
+            x - i + 5 < 21 &&
             map[x - i][y] == map[x - i + 1][y] &&
             map[x - i][y] == map[x - i + 2][y] &&
             map[x - i][y] == map[x - i + 3][y] &&
@@ -31,10 +23,10 @@ bool GameModel::winorlose(int x, int y){
             return true;
     }
     for (int i = 0; i < 6; i++){    //从左下到右上方向上判断输赢
-        if (x + i < chessboard_size &&
+        if (x + i < 21 &&
             x + i - 5 > 0 &&
             y - i > 0 &&
-            y - i + 5 < chessboard_size &&
+            y - i + 5 < 21 &&
             map[x + i][y - i] == map[x + i - 1][y - i + 1] &&
             map[x + i][y - i] == map[x + i - 2][y - i + 2] &&
             map[x + i][y - i] == map[x + i - 3][y - i + 3] &&
@@ -45,9 +37,9 @@ bool GameModel::winorlose(int x, int y){
 
     for (int i = 0; i < 6; i++){    //从左上到右下方向上判断输赢
         if (x - i > 0 &&
-            x - i + 5 < chessboard_size &&
+            x - i + 5 < 21 &&
             y - i > 0 &&
-            y - i + 5 < chessboard_size &&
+            y - i + 5 < 21 &&
             map[x - i][y - i] == map[x - i + 1][y - i + 1] &&
             map[x - i][y - i] == map[x - i + 2][y - i + 2] &&
             map[x - i][y - i] == map[x - i + 3][y - i + 3] &&
@@ -65,8 +57,8 @@ void GameModel::updatemap(int row,int col){
 }
 
 bool GameModel::heqi(){
-    for (int i = 0; i < chessboard_size; i++) {
-        for (int j = 0; j < chessboard_size; j++) {
+    for (int i = 1; i < 21; i++) {
+        for (int j = 1; j < 21; j++) {
             if (map[i][j] == '*') return false;
         }
     }
@@ -158,13 +150,9 @@ bool GameModel::jinshou(int x, int y){
         else return false;
 }
 
-void GameModel::playchess(int x, int y){
-    if (playerflag) map[x][y] = 'B';
-    else map[x][y] = 'W';
-}
 
 void GameModel::AIgetscore(char ch){
-    int oppnum = 0, AInum = 0,blanknum= 0;
+        int oppnum = 0, AInum = 0,blanknum= 0;
         char dh;
         if (ch == 'B') dh = 'W';
         else if (ch == 'W') dh = 'B';
@@ -203,20 +191,20 @@ void GameModel::AIgetscore(char ch){
                                     }
                                     else break;   //检测到自己的棋子或者到达边界则退出循环
                                 }
-                                if (oppnum == 1) scoremap[i][j] += 10;   //抵挡敌方棋子一颗时分数+10
+                                if (oppnum == 1) scoremap[i][j] += 10;    //抵挡敌方棋子一颗时分数+10
                                 else if (oppnum == 2) {
                                     if (blanknum == 1) scoremap[i][j] += 20;  //抵挡敌方眠2时分数+20
-                                    else scoremap[i][j] += 25;        //抵挡敌方活2时分数+25
+                                    else scoremap[i][j] +=25 ;                //抵挡敌方活2时分数+25
                                 }
                                 else if (oppnum == 3) {
-                                    if (blanknum == 1) scoremap[i][j] += 30;
-                                    else scoremap[i][j] += 35;
+                                    if (blanknum == 1) scoremap[i][j] += 300;  //抵挡敌方眠3时分数+300
+                                    else scoremap[i][j] += 350;                //抵挡敌方活3时分数+350
                                 }
                                 else if (oppnum == 4) {
-                                    if (blanknum == 1) scoremap[i][j] += 40;
-                                    else scoremap[i][j] += 45;
+                                    if (blanknum == 1) scoremap[i][j] += 4000;      //抵挡敌方眠4时分数+4000
+                                    else scoremap[i][j] += 4500;                    //抵挡敌方活4时分数+4500
                                 }
-                                else if (oppnum == 5) scoremap[i][j] += 100;
+                                else if (oppnum == 5) scoremap[i][j] += 10000;      //抵挡敌方棋子五颗时分数+10000
                                 blanknum = 0;
                             //根据自己落子情况评定分数：
                                 for (int s = 1; s <= 5; s++) {   //此方向查询五颗棋子
@@ -243,20 +231,20 @@ void GameModel::AIgetscore(char ch){
                                     }
                                     else break;   //检测到敌方的棋子或者到达边界则退出循环
                                 }
-                                if (AInum == 1) scoremap[i][j] += 10;   //抵挡敌方棋子一颗时分数+10
+                                if (AInum == 1) scoremap[i][j] += 10;     //落一颗子时分数+10
                                 else if (AInum == 2) {
-                                    if (blanknum == 1) scoremap[i][j] += 20;  //抵挡敌方眠2时分数+20
-                                    else scoremap[i][j] += 25;        //抵挡敌方活2时分数+25
+                                    if (blanknum == 1) scoremap[i][j] += 200;    //落子形成眠2时分数+200
+                                    else scoremap[i][j] += 250;                  //落子形成活2时分数+250
                                 }
                                 else if (AInum == 3) {
-                                    if (blanknum == 1) scoremap[i][j] += 30;
-                                    else scoremap[i][j] += 35;
+                                    if (blanknum == 1) scoremap[i][j] += 3000;      //落子形成眠3时分数+3000
+                                    else scoremap[i][j] += 3500;                    //落子形成活3时分数+3500
                                 }
                                 else if (AInum == 4) {
-                                    if (blanknum == 1) scoremap[i][j] += 40;
-                                    else scoremap[i][j] += 45;
+                                    if (blanknum == 1) scoremap[i][j] += 40000;      //落子形成眠4时分数+40000
+                                    else scoremap[i][j] += 45000;                    //落子形成活4时分数+45000
                                 }
-                                else if (AInum >= 5) scoremap[i][j] += 100;
+                                else if (AInum >= 5) scoremap[i][j] += 100000;        //落子后大于等于五颗棋子时分数+100000
                                 blanknum = 0;
                             }
                         }
@@ -267,15 +255,15 @@ void GameModel::AIgetscore(char ch){
 
 
 void GameModel::AIplaywu(){
-    AIgetscore('W');
+    AIgetscore('B');
     int maxscore = 0;
-    for (int i = 0; i < chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
+    for (int i = 1; i < 21; i++)
+        for (int j = 1; j < 21; j++)
             if (scoremap[i][j] > maxscore) maxscore = scoremap[i][j];     //得到最大分数值
     int num = 0;             //最大值个数
     int p[400], q[400];            //存放最大值位置的数组
-    for (int i = 0; i < chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
+    for (int i = 1; i < 21; i++)
+        for (int j = 1; j < 21; j++)
             if (scoremap[i][j] == maxscore) {
                 p[num] = i;
                 q[num] = j;
@@ -285,47 +273,40 @@ void GameModel::AIplaywu(){
     srand((unsigned)time(0));
     n = rand() % num;	//n为0到num-1的随机数，随机取一个最大数值
     updatemap(p[n],q[n]);
+
 }
 
 void GameModel::AI1play(){
-    AIgetscore(ch);
-    char dh;
-    if (ch == 'B') dh = 'W';
-    else dh = 'B';
+    AIgetscore('W');
     int maxscore = 0;
-    for (int i = 0; i < chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
+    for (int i = 1; i < 21; i++)
+        for (int j = 1; j < 21; j++)
             if (scoremap[i][j] > maxscore) maxscore = scoremap[i][j];     //得到最大分数值
     int num = 0;             //最大值个数
     int p[400], q[400];            //存放可放最大值位置的数组
-    for (int i = 0; i < 20; i++)
-        for (int j = 0; j < 20; j++)
+    for (int i = 1; i < 21; i++)
+        for (int j = 1; j < 21; j++)
             if (scoremap[i][j] == maxscore) {
-                if (!jinshou(i, j)) {
                     p[num] = i;
                     q[num] = j;
                     num++;
                 }
-            }
     int n;
     srand((unsigned)time(0));
     n = rand() % num;	                 //n为0到num-1的随机数，随机取一个最大数值
-    if (ch == 'B') map[p[n]][q[n]] = 'W';
-    else map[p[n]][q[n]] = 'B';
-    a = p[n];
-    b = q[n];
+    updatemap(p[n],q[n]);
 }
 
 void GameModel::AI2play(){
-    AIgetscore(ch);
+    AIgetscore('B');
     int maxscore = 0;
-    for (int i = 0; i < chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
+    for (int i = 1; i < 21; i++)
+        for (int j = 1; j < 21; j++)
             if (scoremap[i][j] > maxscore) maxscore = scoremap[i][j];     //得到最大分数值
     int num = 0;             //最大值个数
     int p[400], q[400];            //存放最大值位置的数组
-    for (int i = 0; i < chessboard_size; i++)
-        for (int j = 0; j < chessboard_size; j++)
+    for (int i = 1; i < 21; i++)
+        for (int j = 1; j < 21; j++)
             if (scoremap[i][j] == maxscore) {
                 p[num] = i;
                 q[num] = j;
@@ -334,10 +315,7 @@ void GameModel::AI2play(){
     int n;
     srand((unsigned)time(0));
     n = rand() % num;	                 //n为0到num-1的随机数，随机取一个最大数值
-    if (ch == 'B') map[p[n]][q[n]] = 'W';
-    else map[p[n]][q[n]] = 'B';
-    a = p[n];
-    b = q[n];
+    updatemap(p[n],q[n]);
 }
 
 
@@ -352,7 +330,7 @@ void GameModel::startGame(GameType type){
         map.push_back(lineBoard);
     }
     //如果是AI模式，初始化分数图
-    if(gameType==gamemodetwo){
+    if(gameType==gamemodetwo||gameType==gamemodethree){
         scoremap.clear();
         for(int i=0;i<chessboard_size;i++){
             std::vector<int> lineScores;

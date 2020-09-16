@@ -26,12 +26,16 @@ public:
     void dealfightAI();
     void dealAIfight();
 
+protected:
+    void paintEvent(QPaintEvent *);
+
 private:
     Ui::Widget *ui;
 
     QPushButton *btn1;
     QPushButton *btn2;
     QPushButton *btn3;
+    QPushButton *btn4;
 
     chessByPerson w1;
     fightAI w2;
